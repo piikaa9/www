@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - materials - compressed textures</title>
+		<title>Atomicals Universe Visualization</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="main.css">
@@ -9,7 +9,7 @@
 	<body>
 
 		<div id="info">
-			Atomicals Visualization
+			<h1>Atomicals Universe Visualization</h1>
 		</div>
 
 		<!-- Import maps polyfill -->
@@ -21,6 +21,8 @@
 				"imports": {
 					"three": "./build/three.module.js",
 					"three/addons/": "./jsm/"
+				
+
 				}
 			}
 		</script>
@@ -41,25 +43,27 @@
 				padding: 5px 10px;
 			}
 		</style>
+
 		<div id="input-container">
 			<input type="text" id="input-field" placeholder="Enter text here">
 			<button id="submit-button">Submit</button>
 		</div>
 
-
 		<script type="module">
 
-			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-			// Function to handle input submission
-			function handleSubmit() {
+			// Modify handleSubmit function to use the API
+			async function handleSubmit() {
 				const inputField = document.getElementById('input-field');
 				const inputText = inputField.value;
 				console.log('Submitted text:', inputText);
-				// You can add more logic here to use the input text
+				
+				// Make the API request with inputText as the scriptHash
+				await fetchAtomicalsData(inputText);
+				
 				inputField.value = ''; // Clear the input field after submission
 			}
 
+			
 			// Add event listener to the submit button
 			document.getElementById('submit-button').addEventListener('click', handleSubmit);
 
@@ -70,53 +74,126 @@
 				}
 			});
 
+// 进入渲染的界面
+
+
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 			import * as THREE from 'three';
-
 			import { DDSLoader } from 'three/addons/loaders/DDSLoader.js';
-
 			let camera, scene, renderer;
 			const meshes = [];
-
-			let mesh;
+			let mesh1,mesh2,mesh3,mesh4,mesh5,mesh6;
 
 			init();
 			animate();
 
 			function init() {
+				//camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 100 );
+				//camera.position.z = 10;
+				const aspectRatio = window.innerWidth / window.innerHeight;
+				const frustumSize = 30;
 
-				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 100 );
-				camera.position.z = 10;
+				// left, right, top, bottom, near, far
+				camera = new THREE.OrthographicCamera(
+					-frustumSize * aspectRatio / 2,  // left
+					frustumSize * aspectRatio / 2,   // right
+					frustumSize / 2,                 // top
+					-frustumSize / 2,                // bottom
+					0.1,                             // near
+					1000                             // far
+				);
 
+				camera.position.z = 30;
 				scene = new THREE.Scene();
-				
-				//const geometry = new THREE.BoxGeometry( 2, 2, 2 );
-
-				/*
-				This is how compressed textures are supposed to be used:
-
-				DXT1 - RGB - opaque textures
-				DXT3 - RGBA - transparent textures with sharp alpha transitions
-				DXT5 - RGBA - transparent textures with full alpha range
-				*/
-
 				const loader = new DDSLoader();
 
-				const map1 = loader.load( 'atom3.dds' );
+				const map1 = loader.load( 'disturb_dxt1_nomip.dds' );
 				map1.minFilter = map1.magFilter = THREE.LinearFilter;
 				map1.anisotropy = 4;
 				map1.colorSpace = THREE.SRGBColorSpace;
 
-				
+				const map2 = loader.load( 'atom3.dds' );
+				map2.minFilter = map2.magFilter = THREE.LinearFilter;
+				map2.anisotropy = 4;
+				map2.colorSpace = THREE.SRGBColorSpace;
+
+				const map3 = loader.load( 'atom3.dds' );
+				map3.minFilter = map3.magFilter = THREE.LinearFilter;
+				map3.anisotropy = 4;
+				map3.colorSpace = THREE.SRGBColorSpace;
+
+				const map4 = loader.load( 'atom3.dds' );
+				map4.minFilter = map4.magFilter = THREE.LinearFilter;
+				map4.anisotropy = 4;
+				map4.colorSpace = THREE.SRGBColorSpace;
+
+				const map5 = loader.load( 'atom3.dds' );
+				map5.minFilter = map5.magFilter = THREE.LinearFilter;
+				map5.anisotropy = 4;
+				map5.colorSpace = THREE.SRGBColorSpace;
+
+				const map6 = loader.load( 'atom3.dds' );
+				map6.minFilter = map6.magFilter = THREE.LinearFilter;
+				map6.anisotropy = 4;
+				map6.colorSpace = THREE.SRGBColorSpace;
+
+
 				//const material1 = new THREE.MeshBasicMaterial( { map: map1} );
 				const material1 = new THREE.MeshPhongMaterial( { map: map1} );
+				const material2 = new THREE.MeshPhongMaterial( { map: map2} );
+				const material3 = new THREE.MeshPhongMaterial( { map: map3} );
+				const material4 = new THREE.MeshPhongMaterial( { map: map4} );
 
+				const material5 = new THREE.MeshPhongMaterial( { map: map5} );
+				const material6 = new THREE.MeshPhongMaterial( { map: map6} );
 				
-				mesh = new THREE.Mesh( new THREE.SphereGeometry(5), material1 );
-				mesh.position.x = 0;
-				mesh.position.y = 0;
-				scene.add( mesh );
+				// electron
+				mesh1 = new THREE.Mesh( new THREE.SphereGeometry(5), material1 );
+				mesh1.position.x = 0;
+				mesh1.position.y = -7;
+				mesh1.position.z = -21;
+				scene.add( mesh1 );
+				meshes.push(mesh1);
 
+				// quark
+				mesh2 = new THREE.Mesh( new THREE.SphereGeometry(5), material2 );
+				mesh2.position.x = 0;
+				mesh2.position.y = -7;
+				mesh2.position.z = -7;
+				scene.add( mesh2 );
+				meshes.push(mesh2);
+				
+				// sophon
+				mesh3 = new THREE.Mesh( new THREE.SphereGeometry(5), material3 );
+				mesh3.position.x = 0;
+				mesh3.position.y = -7;
+				mesh3.position.z = 7;
+				scene.add( mesh3 );
+				meshes.push(mesh3);
 
+				// infinity
+				mesh4 = new THREE.Mesh( new THREE.SphereGeometry(5), material4 );
+				mesh4.position.x = 0;
+				mesh4.position.y = -7;
+				mesh4.position.z = 21;
+				scene.add( mesh4 );
+				meshes.push(mesh4);
+
+				// blank UTXO
+				mesh5= new THREE.Mesh( new THREE.SphereGeometry(5), material5 );
+				mesh5.position.x = 0;
+				mesh5.position.y = 5;
+				mesh5.position.z = -12;
+				scene.add( mesh5 );
+				meshes.push(mesh5);
+
+				// ATOM
+				mesh6 = new THREE.Mesh( new THREE.SphereGeometry(5), material6 );
+				mesh6.position.x = 0;
+				mesh6.position.y = 5;
+				mesh6.position.z = 12;
+				scene.add( mesh6 );
+				meshes.push(mesh6);
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -130,8 +207,8 @@
 				camera.lookAt(scene.position);
 
 				// Add a white light source
-				const light = new THREE.PointLight(0xffffff, 5000, 0);
-				light.position.set(20, 0, 0);
+				const light = new THREE.PointLight(0xffffff, 20000, 0);
+				light.position.set(40, 0, 0);
 				scene.add(light);
 
 				// Add ambient light to ensure the scene is not too dark
@@ -155,15 +232,15 @@
 
 				const time = Date.now() * 0.001;
 				//mesh.rotation.y = time * 0.5;
-				/*
+				
 				for ( let i = 0; i < meshes.length; i ++ ) {
 
 					const mesh = meshes[ i ];
-					mesh.rotation.x = time;
+					//mesh.rotation.x = time;
 					mesh.rotation.y = time;
 
 				}
-				*/
+				
 
 				renderer.render( scene, camera );
 
