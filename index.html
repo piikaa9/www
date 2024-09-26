@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - materials - compressed textures</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+	</head>
+	<body>
+
+		<div id="info">
+			Atomicals Visualization
+		</div>
+
+		<!-- Import maps polyfill -->
+		<!-- Remove this when import maps will be widely supported -->
+		<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "./build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+
+		<style>
+			#input-container {
+				position: absolute;
+				top: 10px;
+				left: 10px;
+				z-index: 100;
+			}
+			#input-field {
+				padding: 5px;
+				margin-right: 5px;
+			}
+			#submit-button {
+				padding: 5px 10px;
+			}
+		</style>
+		<div id="input-container">
+			<input type="text" id="input-field" placeholder="Enter text here">
+			<button id="submit-button">Submit</button>
+		</div>
+
+
+		<script type="module">
+
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+			// Function to handle input submission
+			function handleSubmit() {
+				const inputField = document.getElementById('input-field');
+				const inputText = inputField.value;
+				console.log('Submitted text:', inputText);
+				// You can add more logic here to use the input text
+				inputField.value = ''; // Clear the input field after submission
+			}
+
+			// Add event listener to the submit button
+			document.getElementById('submit-button').addEventListener('click', handleSubmit);
+
+			// Add event listener for the 'Enter' key in the input field
+			document.getElementById('input-field').addEventListener('keypress', function(event) {
+				if (event.key === 'Enter') {
+					handleSubmit();
+				}
+			});
+
+			import * as THREE from 'three';
+
+			import { DDSLoader } from 'three/addons/loaders/DDSLoader.js';
+
+			let camera, scene, renderer;
+			const meshes = [];
+
+			let mesh;
+
+			init();
+			animate();
+
+			function init() {
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 100 );
+				camera.position.z = 10;
+
+				scene = new THREE.Scene();
+				
+				//const geometry = new THREE.BoxGeometry( 2, 2, 2 );
+
+				/*
+				This is how compressed textures are supposed to be used:
+
+				DXT1 - RGB - opaque textures
+				DXT3 - RGBA - transparent textures with sharp alpha transitions
+				DXT5 - RGBA - transparent textures with full alpha range
+				*/
+
+				const loader = new DDSLoader();
+
+				const map1 = loader.load( 'atom3.dds' );
+				map1.minFilter = map1.magFilter = THREE.LinearFilter;
+				map1.anisotropy = 4;
+				map1.colorSpace = THREE.SRGBColorSpace;
+
+				
+				//const material1 = new THREE.MeshBasicMaterial( { map: map1} );
+				const material1 = new THREE.MeshPhongMaterial( { map: map1} );
+
+				
+				mesh = new THREE.Mesh( new THREE.SphereGeometry(5), material1 );
+				mesh.position.x = 0;
+				mesh.position.y = 0;
+				scene.add( mesh );
+
+
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			// Adjust camera position to positive x-axis
+				camera.position.set(30, 0, 0);
+				camera.lookAt(scene.position);
+
+				// Add a white light source
+				const light = new THREE.PointLight(0xffffff, 5000, 0);
+				light.position.set(20, 0, 0);
+				scene.add(light);
+
+				// Add ambient light to ensure the scene is not too dark
+				const ambientLight = new THREE.AmbientLight(0x404040);
+				scene.add(ambientLight);
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				const time = Date.now() * 0.001;
+				//mesh.rotation.y = time * 0.5;
+				/*
+				for ( let i = 0; i < meshes.length; i ++ ) {
+
+					const mesh = meshes[ i ];
+					mesh.rotation.x = time;
+					mesh.rotation.y = time;
+
+				}
+				*/
+
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+
+	</body>
+</html>
